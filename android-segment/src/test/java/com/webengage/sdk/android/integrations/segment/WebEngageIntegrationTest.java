@@ -32,6 +32,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -179,15 +180,20 @@ public class WebEngageIntegrationTest {
         traits.putAddress(new Traits.Address().putStreet("street1").putCity("city1").putCountry("country1").putState("state1"));
         traits.putAge(25);
         traits.putValue("isLucky", true);
-        traits.putValue("we_hashed_email", "ABC");
-        traits.putValue("we_hashed_phone", "111");
-        traits.putValue("we_push_opt_in", true);
-        traits.putValue("we_sms_opt_in", false);
-        traits.putValue("we_email_opt_in", true);
+
+        Map<String,Object> webengageOptions = new HashMap<String,Object>();
+        webengageOptions.put("we_hashed_email", "ABC");
+        webengageOptions.put("we_hashed_phone", "111");
+        webengageOptions.put("we_push_opt_in", true);
+        webengageOptions.put("we_sms_opt_in", false);
+        webengageOptions.put("we_email_opt_in", true);
+
+
 
         IdentifyPayload identifyPayload = new IdentifyPayload.Builder()
                 .userId("fanatic")
                 .traits(traits)
+                .integration("WebEngage",webengageOptions)
                 .build();
 
         UserProfile.Builder userProfileBuilder = mock(UserProfile.Builder.class);

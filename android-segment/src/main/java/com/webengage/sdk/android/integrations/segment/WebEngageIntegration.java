@@ -160,35 +160,33 @@ public class WebEngageIntegration extends Integration<WebEngage> {
                     traits.remove(PHONE_KEY);
                 }
 
-                if (traits.get(HASHED_EMAIL_KEY) != null) {
-                    userProfileBuilder.setHashedEmail((String) traits.get(HASHED_EMAIL_KEY));
-                    traits.remove(HASHED_EMAIL_KEY);
-                }
-
-                if (traits.get(HASHED_PHONE_KEY) != null) {
-                    userProfileBuilder.setHashedPhoneNumber((String) traits.get(HASHED_PHONE_KEY));
-                    traits.remove(HASHED_PHONE_KEY);
-                }
-
-                if (traits.get(PUSH_OPT_IN_KEY) != null) {
-                    userProfileBuilder.setOptIn(Channel.PUSH, Boolean.valueOf(String.valueOf(traits.get(PUSH_OPT_IN_KEY))));
-                    traits.remove(PUSH_OPT_IN_KEY);
-                }
-
-                if (traits.get(SMS_OPT_IN_KEY) != null) {
-                    userProfileBuilder.setOptIn(Channel.SMS, Boolean.valueOf(String.valueOf(traits.get(SMS_OPT_IN_KEY))));
-                    traits.remove(SMS_OPT_IN_KEY);
-                }
-
-                if (traits.get(EMAIL_OPT_IN_KEY) != null) {
-                    userProfileBuilder.setOptIn(Channel.EMAIL, Boolean.valueOf(String.valueOf(traits.get(EMAIL_OPT_IN_KEY))));
-                    traits.remove(EMAIL_OPT_IN_KEY);
-                }
-
                 if (traits.get(ADDRESS_KEY) != null) {
                     Traits.Address address = (Traits.Address) traits.get(ADDRESS_KEY);
                     traits.remove(ADDRESS_KEY);
                     traits.putAll(address);
+                }
+
+                Map<String, Object> webengageOptions = identify.integrations().getValueMap(KEY);
+                if (webengageOptions != null) {
+                    if (webengageOptions.get(HASHED_EMAIL_KEY) != null) {
+                        userProfileBuilder.setHashedEmail((String) webengageOptions.get(HASHED_EMAIL_KEY));
+                    }
+
+                    if (webengageOptions.get(HASHED_PHONE_KEY) != null) {
+                        userProfileBuilder.setHashedPhoneNumber((String) webengageOptions.get(HASHED_PHONE_KEY));
+                    }
+
+                    if (webengageOptions.get(PUSH_OPT_IN_KEY) != null) {
+                        userProfileBuilder.setOptIn(Channel.PUSH, Boolean.valueOf(String.valueOf(webengageOptions.get(PUSH_OPT_IN_KEY))));
+                    }
+
+                    if (webengageOptions.get(SMS_OPT_IN_KEY) != null) {
+                        userProfileBuilder.setOptIn(Channel.SMS, Boolean.valueOf(String.valueOf(webengageOptions.get(SMS_OPT_IN_KEY))));
+                    }
+
+                    if (webengageOptions.get(EMAIL_OPT_IN_KEY) != null) {
+                        userProfileBuilder.setOptIn(Channel.EMAIL, Boolean.valueOf(String.valueOf(webengageOptions.get(EMAIL_OPT_IN_KEY))));
+                    }
                 }
 
                 WebEngage.get().user().setUserProfile(userProfileBuilder.build());
