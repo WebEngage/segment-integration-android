@@ -1,7 +1,11 @@
 package com.webengage.segmentandroidtest;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 
@@ -9,10 +13,11 @@ import com.segment.analytics.Analytics;
 import com.segment.analytics.Options;
 import com.segment.analytics.Properties;
 import com.segment.analytics.Traits;
+import com.webengage.sdk.android.WebEngage;
 
 import java.util.UUID;
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
     Button login, track, setAttr, logout;
 
     @Override
@@ -34,6 +39,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onStart() {
         super.onStart();
         Analytics.with(this.getApplicationContext()).screen("MainScreen", new Properties().putValue("abc", 1).putValue("discount", true));
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 102);
+        }
+
     }
 
 
@@ -46,7 +56,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
 
             case R.id.track:
-                Analytics.with(this.getApplicationContext()).track("BigPictureNotification", new Properties().putValue("price", 200),new Options().setIntegration("Mixpanel",true).setIntegration("KISSmetrics",true));
+                Analytics.with(this.getApplicationContext()).track("BigPictureNotification", new Properties().putValue("price", 200), new Options().setIntegration("Mixpanel", true).setIntegration("KISSmetrics", true));
 
                 Analytics.with(this.getApplicationContext()).track("CheckoutStarted", new Properties().putValue("price", 100).putValue("currency", "INR"));
                 Analytics.with(this.getApplicationContext()).track("CheckoutCompleted", new Properties().putValue("price", 100).putValue("discount", 50));
@@ -63,6 +73,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.logout:
 
                 Analytics.with(this.getApplicationContext()).reset();
+                break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 102:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    WebEngage.get().setLocationTracking(true);
+                }
+
                 break;
         }
     }
