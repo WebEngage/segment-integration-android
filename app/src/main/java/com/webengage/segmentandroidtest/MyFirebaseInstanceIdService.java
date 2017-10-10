@@ -12,6 +12,6 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
 
     @Override
     public void onTokenRefresh() {
-        //WebEngage.get().setRegistrationID(FirebaseInstanceId.getInstance().getToken());
+        WebEngage.get().setRegistrationID(FirebaseInstanceId.getInstance().getToken());
     }
 }

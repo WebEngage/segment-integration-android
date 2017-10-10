@@ -14,7 +14,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Map<String, String> data = remoteMessage.getData();
         if (data != null) {
             if (data.containsKey("source") && "webengage".equals(data.get("source"))) {
-                //WebEngage.get().receive(data);
+                WebEngage.get().receive(data);
             }
         }
     }
