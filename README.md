@@ -33,7 +33,7 @@ analytics = new Analytics.Builder(this, "write_key")
 Please follow our [android push notification documentation](https://docs.webengage.com/docs/android-push-messaging)
 
 ## In-App Notifications
-No furhter action is required to integrate in-app messages.
+No further action is required to integrate in-app messages.
 
 ## Proguard
 Please include the following rules in your proguard file.
