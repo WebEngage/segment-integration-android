@@ -181,7 +181,7 @@ public class WebEngageIntegrationTest {
         traits.putAge(25);
         traits.putValue("isLucky", true);
 
-        Map<String,Object> webengageOptions = new HashMap<String,Object>();
+        Map<String,Object> webengageOptions = new HashMap<>();
         webengageOptions.put("we_hashed_email", "ABC");
         webengageOptions.put("we_hashed_phone", "111");
         webengageOptions.put("we_push_opt_in", true);
