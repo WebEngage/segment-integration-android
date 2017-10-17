@@ -191,7 +191,7 @@ public class WebEngageIntegration extends Integration<WebEngage> {
     public void track(TrackPayload track) {
         super.track(track);
         WebEngage.get().analytics().track(track.event(), track.properties());
-        segmentLogger.verbose("WebEngage.get().analytics().track(%s, %s)", track.event(), track.properties().toJsonObject());
+        segmentLogger.verbose("WebEngage.get().analytics().track(%s, %s)", track.event(), track.properties());
     }
 
     @Override
@@ -201,7 +201,7 @@ public class WebEngageIntegration extends Integration<WebEngage> {
             Map<String, Object> properties = new HashMap<>();
             properties.putAll(screen.properties());
             WebEngage.get().analytics().screenNavigated(screen.name(), properties);
-            segmentLogger.verbose("WebEngage.get().analytics().screenNavigated(%s, %s)", screen.name(), screen.properties().toJsonObject());
+            segmentLogger.verbose("WebEngage.get().analytics().screenNavigated(%s, %s)", screen.name(), screen.properties());
         }
     }
 

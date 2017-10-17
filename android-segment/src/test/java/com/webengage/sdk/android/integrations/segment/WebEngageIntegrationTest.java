@@ -21,6 +21,7 @@ import com.webengage.sdk.android.WebEngage;
 import com.webengage.sdk.android.WebEngageConfig;
 import com.webengage.sdk.android.utils.Gender;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -192,6 +193,7 @@ public class WebEngageIntegrationTest {
 
         IdentifyPayload identifyPayload = new IdentifyPayload.Builder()
                 .userId("fanatic")
+                .anonymousId("anon1")
                 .traits(traits)
                 .integration("WebEngage",webengageOptions)
                 .build();
