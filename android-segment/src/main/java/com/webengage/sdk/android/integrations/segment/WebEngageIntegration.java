@@ -39,6 +39,7 @@ public class WebEngageIntegration extends Integration<WebEngage> {
     private static final String NAME_KEY = "name";
     private static final String ADDRESS_KEY = "address";
     private static final String USER_ID_KEY = "userId";
+    private static final String ANONYMOUS_ID_KEY = "anonymousId";
 
 
     private static final String HASHED_EMAIL_KEY = "we_hashed_email";
@@ -65,7 +66,6 @@ public class WebEngageIntegration extends Integration<WebEngage> {
                     .build();
             logger.verbose("Started WebEngage SDK initialization through Segment Integration, license code: %s", licenseCode);
             WebEngage.engage(analytics.getApplication(), webEngageConfig);
-
             return new WebEngageIntegration(logger);
         }
 
@@ -99,6 +99,7 @@ public class WebEngageIntegration extends Integration<WebEngage> {
     public void identify(IdentifyPayload identify) {
         super.identify(identify);
         Map<String, Object> traits = new HashMap<>(identify.traits());
+        traits.remove(ANONYMOUS_ID_KEY);
         if (identify.userId() != null) {
             WebEngage.get().user().login(identify.userId());
             segmentLogger.verbose("WebEngage.get().user().login(%s)", identify.userId());
