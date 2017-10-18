@@ -15,6 +15,9 @@ import com.segment.analytics.Properties;
 import com.segment.analytics.Traits;
 import com.webengage.sdk.android.WebEngage;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class MainActivity extends Activity implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
@@ -51,8 +54,15 @@ public class MainActivity extends Activity implements View.OnClickListener, Acti
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.login:
-
-                Analytics.with(this).identify(UUID.randomUUID().toString());
+                String cuid = UUID.randomUUID().toString();
+                Analytics.with(this).identify(cuid);
+                Map<String, Object> webEngageOptions = new HashMap<>();
+                webEngageOptions.put("we_hashed_email", "123");
+                webEngageOptions.put("we_hashed_phone", "321");
+                webEngageOptions.put("we_push_opt_in", true);
+                webEngageOptions.put("we_sms_opt_in", true);
+                webEngageOptions.put("we_email_opt_in", false);
+                Analytics.with(this.getApplicationContext()).identify(cuid, null, new Options().setIntegrationOptions("WebEngage", webEngageOptions));
                 break;
 
             case R.id.track:
@@ -65,9 +75,10 @@ public class MainActivity extends Activity implements View.OnClickListener, Acti
 
 
             case R.id.setAttribute:
+                Analytics.with(this.getApplicationContext()).identify(new Traits().putFirstName("alexa").putLastName("board").putGender("male").putPhone("8888888888").putAge(24).putEmail("abc@gmail.com").putBirthday(new Date(701682609000L)));
+                Analytics.with(this.getApplicationContext()).identify(new Traits().putValue("isA", true).putValue("b", 10).putAddress(new Traits.Address().putCity("Mumbai").putState("Maharashtra").putCountry("India").putPostalCode("400072").putStreet("AK road")));
 
-                Analytics.with(this.getApplicationContext()).identify(new Traits().putFirstName("alexa").putLastName("board").putGender("male").putPhone("8888888888").putAge(24).putEmail("abc@gmail.com"));
-                Analytics.with(this.getApplicationContext()).identify(new Traits().putValue("isA", true).putValue("b", 10));
+
                 break;
 
             case R.id.logout:

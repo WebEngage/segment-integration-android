@@ -105,86 +105,109 @@ public class WebEngageIntegration extends Integration<WebEngage> {
             segmentLogger.verbose("WebEngage.get().user().login(%s)", identify.userId());
             traits.remove(USER_ID_KEY);
         }
-
         UserProfile.Builder userProfileBuilder = newUserProfileBuilder();
-        Object birthDateObj = traits.get(BIRTHDAY_KEY);
-        if (birthDateObj != null) {
-            Date birthDate = null;
-            try {
-                birthDate = Utils.toISO8601Date((String) birthDateObj);
-            } catch (Exception e) {
-                segmentLogger.error(e, "Unable to parse birth date %s to date object", birthDateObj);
-            }
-            if (birthDate != null) {
-                Calendar gregorianCalendar = GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
-                gregorianCalendar.setTime(birthDate);
-                userProfileBuilder.setBirthDate(gregorianCalendar.get(Calendar.YEAR), gregorianCalendar.get(Calendar.MONTH) + 1, gregorianCalendar.get(Calendar.DAY_OF_MONTH));
-                traits.remove(BIRTHDAY_KEY);
-            }
-        }
-        if (traits.get(FIRST_NAME_KEY) == null && traits.get(LAST_NAME_KEY) == null) {
-            String name = (String) traits.get(NAME_KEY);
-            if (name != null) {
-                String[] components = name.split(" ");
-                userProfileBuilder.setFirstName(components[0]);
-                if (components.length > 1) {
-                    userProfileBuilder.setLastName(components[components.length - 1]);
+        if (!traits.isEmpty()) {
+            Object birthDateObj = traits.get(BIRTHDAY_KEY);
+            if (birthDateObj != null) {
+                Date birthDate = null;
+                try {
+                    birthDate = Utils.toISO8601Date((String) birthDateObj);
+                } catch (Exception e) {
+                    segmentLogger.error(e, "Unable to parse birth date %s to date object", birthDateObj);
                 }
-                traits.remove(NAME_KEY);
+                if (birthDate != null) {
+                    Calendar gregorianCalendar = GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
+                    gregorianCalendar.setTime(birthDate);
+                    int year = gregorianCalendar.get(Calendar.YEAR);
+                    int month = gregorianCalendar.get(Calendar.MONTH) + 1;
+                    int day = gregorianCalendar.get(Calendar.DAY_OF_MONTH);
+                    userProfileBuilder.setBirthDate(year, month, day);
+                    segmentLogger.verbose("Setting birth date: %s-%s-%s", year, month, day);
+                    traits.remove(BIRTHDAY_KEY);
+                }
             }
-        }
-        if (traits.get(FIRST_NAME_KEY) != null) {
-            userProfileBuilder.setFirstName((String) traits.get(FIRST_NAME_KEY));
-            traits.remove(FIRST_NAME_KEY);
-        }
-        if (traits.get(LAST_NAME_KEY) != null) {
-            userProfileBuilder.setLastName((String) traits.get(LAST_NAME_KEY));
-            traits.remove(LAST_NAME_KEY);
-        }
-        if (traits.get(INDUSTRY_KEY) != null) {
-            userProfileBuilder.setCompany((String) traits.get(INDUSTRY_KEY));
-            traits.remove(INDUSTRY_KEY);
-        }
-        if (traits.get(EMAIL_KEY) != null) {
-            userProfileBuilder.setEmail((String) traits.get(EMAIL_KEY));
-            traits.remove(EMAIL_KEY);
-        }
-        if (traits.get(GENDER_KEY) != null) {
-            userProfileBuilder.setGender(Gender.valueByString((String) traits.get(GENDER_KEY)));
-            traits.remove(GENDER_KEY);
-        }
-        if (traits.get(PHONE_KEY) != null) {
-            userProfileBuilder.setPhoneNumber((String) traits.get(PHONE_KEY));
-            traits.remove(PHONE_KEY);
-        }
-        if (traits.get(ADDRESS_KEY) != null) {
-            Traits.Address address = (Traits.Address) traits.get(ADDRESS_KEY);
-            traits.remove(ADDRESS_KEY);
-            traits.putAll(address);
+            if (traits.get(FIRST_NAME_KEY) == null && traits.get(LAST_NAME_KEY) == null) {
+                String name = (String) traits.get(NAME_KEY);
+                if (name != null) {
+                    String[] components = name.split(" ");
+                    userProfileBuilder.setFirstName(components[0]);
+                    segmentLogger.verbose("Setting first name: %s", components[0]);
+                    if (components.length > 1) {
+                        userProfileBuilder.setLastName(components[components.length - 1]);
+                        segmentLogger.verbose("Setting last name: %s", components[components.length - 1]);
+                    }
+                    traits.remove(NAME_KEY);
+                }
+            }
+            if (traits.get(FIRST_NAME_KEY) != null) {
+                userProfileBuilder.setFirstName((String) traits.get(FIRST_NAME_KEY));
+                segmentLogger.verbose("Setting first name: %s", traits.get(FIRST_NAME_KEY));
+                traits.remove(FIRST_NAME_KEY);
+            }
+            if (traits.get(LAST_NAME_KEY) != null) {
+                userProfileBuilder.setLastName((String) traits.get(LAST_NAME_KEY));
+                segmentLogger.verbose("Setting last name: %s", traits.get(LAST_NAME_KEY));
+                traits.remove(LAST_NAME_KEY);
+            }
+            if (traits.get(INDUSTRY_KEY) != null) {
+                userProfileBuilder.setCompany((String) traits.get(INDUSTRY_KEY));
+                segmentLogger.verbose("Setting industry: %s", traits.get(INDUSTRY_KEY));
+                traits.remove(INDUSTRY_KEY);
+            }
+            if (traits.get(EMAIL_KEY) != null) {
+                userProfileBuilder.setEmail((String) traits.get(EMAIL_KEY));
+                segmentLogger.verbose("Setting email: %s", traits.get(EMAIL_KEY));
+                traits.remove(EMAIL_KEY);
+            }
+            if (traits.get(GENDER_KEY) != null) {
+                Gender gender = Gender.valueByString((String) traits.get(GENDER_KEY));
+                userProfileBuilder.setGender(gender);
+                segmentLogger.verbose("Setting gender: %s", gender);
+                traits.remove(GENDER_KEY);
+            }
+            if (traits.get(PHONE_KEY) != null) {
+                userProfileBuilder.setPhoneNumber((String) traits.get(PHONE_KEY));
+                segmentLogger.verbose("Setting phone number: %s", traits.get(PHONE_KEY));
+                traits.remove(PHONE_KEY);
+            }
+            if (traits.get(ADDRESS_KEY) != null) {
+                Traits.Address address = (Traits.Address) traits.get(ADDRESS_KEY);
+                traits.putAll(address);
+                segmentLogger.verbose("Setting address: %s", traits.get(ADDRESS_KEY));
+                traits.remove(ADDRESS_KEY);
+            }
         }
         Map<String, Object> webengageOptions = identify.integrations().getValueMap(KEY);
         if (webengageOptions != null) {
             if (webengageOptions.get(HASHED_EMAIL_KEY) != null) {
                 userProfileBuilder.setHashedEmail((String) webengageOptions.get(HASHED_EMAIL_KEY));
+                segmentLogger.verbose("Setting hashed email: %s", webengageOptions.get(HASHED_EMAIL_KEY));
             }
             if (webengageOptions.get(HASHED_PHONE_KEY) != null) {
                 userProfileBuilder.setHashedPhoneNumber((String) webengageOptions.get(HASHED_PHONE_KEY));
+                segmentLogger.verbose("Setting hashed phone number: %s", webengageOptions.get(HASHED_PHONE_KEY));
             }
             if (webengageOptions.get(PUSH_OPT_IN_KEY) != null) {
-                userProfileBuilder.setOptIn(Channel.PUSH, Boolean.valueOf(String.valueOf(webengageOptions.get(PUSH_OPT_IN_KEY))));
+                Boolean pushOptIn = Boolean.valueOf(String.valueOf(webengageOptions.get(PUSH_OPT_IN_KEY)));
+                userProfileBuilder.setOptIn(Channel.PUSH, pushOptIn);
+                segmentLogger.verbose("Setting push opt in: %s", pushOptIn);
             }
             if (webengageOptions.get(SMS_OPT_IN_KEY) != null) {
-                userProfileBuilder.setOptIn(Channel.SMS, Boolean.valueOf(String.valueOf(webengageOptions.get(SMS_OPT_IN_KEY))));
+                Boolean smsOptIn = Boolean.valueOf(String.valueOf(webengageOptions.get(SMS_OPT_IN_KEY)));
+                userProfileBuilder.setOptIn(Channel.SMS, smsOptIn);
+                segmentLogger.verbose("Setting sms opt in: %s", smsOptIn);
             }
             if (webengageOptions.get(EMAIL_OPT_IN_KEY) != null) {
-                userProfileBuilder.setOptIn(Channel.EMAIL, Boolean.valueOf(String.valueOf(webengageOptions.get(EMAIL_OPT_IN_KEY))));
+                Boolean emailOptIn = Boolean.valueOf(String.valueOf(webengageOptions.get(EMAIL_OPT_IN_KEY)));
+                userProfileBuilder.setOptIn(Channel.EMAIL, emailOptIn);
+                segmentLogger.verbose("Setting email opt in: %s", emailOptIn);
             }
         }
         WebEngage.get().user().setUserProfile(userProfileBuilder.build());
-        segmentLogger.verbose("WebEngage.get().user().setUserProfile()");
-        WebEngage.get().user().setAttributes(traits);
-        segmentLogger.verbose("WebEngage.get().user().setAttribute(%s)", traits);
-
+        if (!traits.isEmpty()) {
+            WebEngage.get().user().setAttributes(traits);
+            segmentLogger.verbose("WebEngage.get().user().setAttributes(%s)", traits);
+        }
     }
 
     @Override
@@ -198,9 +221,7 @@ public class WebEngageIntegration extends Integration<WebEngage> {
     public void screen(ScreenPayload screen) {
         super.screen(screen);
         if (screen.name() != null) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.putAll(screen.properties());
-            WebEngage.get().analytics().screenNavigated(screen.name(), properties);
+            WebEngage.get().analytics().screenNavigated(screen.name(), screen.properties());
             segmentLogger.verbose("WebEngage.get().analytics().screenNavigated(%s, %s)", screen.name(), screen.properties());
         }
     }
