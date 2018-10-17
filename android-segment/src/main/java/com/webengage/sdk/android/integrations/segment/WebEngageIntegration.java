@@ -28,7 +28,7 @@ import java.util.TimeZone;
 public class WebEngageIntegration extends Integration<WebEngage> {
 
 
-    private static final String KEY = "WebEngage";
+    protected static final String KEY = "WebEngage";
     private static final String BIRTHDAY_KEY = "birthday";
     private static final String FIRST_NAME_KEY = "firstName";
     private static final String GENDER_KEY = "gender";
@@ -48,32 +48,11 @@ public class WebEngageIntegration extends Integration<WebEngage> {
     private static final String SMS_OPT_IN_KEY = "we_sms_opt_in";
     private static final String EMAIL_OPT_IN_KEY = "we_email_opt_in";
 
-    private static final String LICENSE_CODE_KEY = "licenseCode";
+    protected static final String LICENSE_CODE_KEY = "licenseCode";
     private Logger segmentLogger;
 
 
-    public static final Factory FACTORY = new Factory() {
-        @Override
-        public Integration<?> create(ValueMap settings, Analytics analytics) {
-            Logger logger = analytics.logger(KEY);
-            String licenseCode = settings.getString(LICENSE_CODE_KEY);
-            if (Utils.isNullOrEmpty(licenseCode)) {
-                logger.info("Unable to initialize WebEngage through Segment Integration, Reason: license code is null");
-                return null;
-            }
-            WebEngageConfig webEngageConfig = new WebEngageConfig.Builder()
-                    .setWebEngageKey(licenseCode)
-                    .build();
-            logger.verbose("Started WebEngage SDK initialization through Segment Integration, license code: %s", licenseCode);
-            WebEngage.engage(analytics.getApplication(), webEngageConfig);
-            return new WebEngageIntegration(logger);
-        }
-
-        @Override
-        public String key() {
-            return KEY;
-        }
-    };
+    public static final WebEngageFactory FACTORY = new WebEngageFactory();
 
     WebEngageIntegration(Logger logger) {
         this.segmentLogger = logger;
