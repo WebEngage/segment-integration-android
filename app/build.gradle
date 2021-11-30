@@ -35,7 +35,8 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
     implementation project(':android-segment')
-    implementation 'com.webengage:android-sdk:3.18.8'
+    //implementation("com.webengage:android-segment:2.0.7")
+   // implementation 'com.webengage:android-sdk:3.18.8'
     implementation 'com.google.firebase:firebase-core:20.0.0'
     implementation 'com.segment.analytics.android:analytics:4.9.4'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
