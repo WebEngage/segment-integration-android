@@ -1,14 +1,18 @@
-apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
+plugins {
+    id 'maven-publish'
+    id 'maven'
+    id 'com.android.library'
+}
+
+apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    compileSdkVersion 31
+    buildToolsVersion "31.0.0"
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 26
+        minSdkVersion 16
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
 
@@ -16,62 +20,62 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.webengage:android-sdk:3.+'
-    provided 'com.segment.analytics.android:analytics:4.3.0'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:1.10.19'
-    testCompile 'org.powermock:powermock-api-mockito:1.6.2'
-    testCompile 'org.powermock:powermock-module-junit4:1.6.2'
+    implementation (fileTree(include: ['*.jar'], dir: 'libs'))
+    implementation 'com.webengage:android-sdk:3.+'
+    compileOnly 'com.segment.analytics.android:analytics:4.9.4'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:3.5.11'
+    testImplementation 'org.powermock:powermock-api-mockito:1.6.2'
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.7'
 }
-
-def siteUrl = 'https://www.webengage.com'
-Properties properties = new Properties()
-properties.load(project.file('version.properties').newDataInputStream())
-
-version = properties.getProperty("major") + "." + properties.getProperty("minor") + "." + properties.getProperty("patch")
-group = 'com.webengage'
-
-
-
-install {
-
-    repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
-        pom {
-            project {
-                packaging 'aar'
-                artifactId 'android-segment'
-                groupId 'com.webengage'
-                // Add your description here
-                name 'WebEngage Segment integration library for android'
-                url siteUrl
-                developers {
-                    developer {
-                        id 'webengage'
-                        name 'Shahrukh Imam'
-                        email 'shahrukh@webklipper.com'
-                    }
-                }
-                scm {
-                    url siteUrl
-
-                }
-            }
-        }
-    }
-}
-
-
-bintray {
-    user = System.getenv("BINTRAY_API_USER")
-    key = System.getenv("BINTRAY_API_KEY")
-
-    configurations = ['archives']
-    pkg {
-        repo = "maven"
-        name = "android-segment"
-        websiteUrl = siteUrl
-        publish = true
-    }
-}
+//
+//def siteUrl = 'https://www.webengage.com'
+//Properties properties = new Properties()
+//properties.load(project.file('version.properties').newDataInputStream())
+//
+//version = properties.getProperty("major") + "." + properties.getProperty("minor") + "." + properties.getProperty("patch")
+//group = 'com.webengage'
+//
+//
+//
+//install {
+//
+//    repositories.mavenInstaller {
+//        // This generates POM.xml with proper parameters
+//        pom {
+//            project {
+//                packaging 'aar'
+//                artifactId 'android-segment'
+//                groupId 'com.webengage'
+//                // Add your description here
+//                name 'WebEngage Segment integration library for android'
+//                url siteUrl
+//                developers {
+//                    developer {
+//                        id 'webengage'
+//                        name 'Shahrukh Imam'
+//                        email 'shahrukh@webklipper.com'
+//                    }
+//                }
+//                scm {
+//                    url siteUrl
+//
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//
+//bintray {
+//    user = System.getenv("BINTRAY_API_USER")
+//    key = System.getenv("BINTRAY_API_KEY")
+//
+//    configurations = ['archives']
+//    pkg {
+//        repo = "maven"
+//        name = "android-segment"
+//        websiteUrl = siteUrl
+//        publish = true
+//    }
+//}

@@ -1,0 +1,121 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    if (project.plugins.findPlugin("com.android.library")) {
+        // For Android libraries
+        from android.sourceSets.main.java.srcDirs
+//        from android.sourceSets.main.kotlin.srcDirs
+    } else {
+        // For pure Kotlin libraries, in case you have them
+        from sourceSets.main.java.srcDirs
+        from sourceSets.main.kotlin.srcDirs
+    }
+}
+
+artifacts {
+    archives androidSourcesJar
+}
+
+def siteUrl = 'https://www.webengage.com'
+Properties properties = new Properties()
+properties.load(project.file('version.properties').newDataInputStream())
+version = properties.getProperty("major") + "." + properties.getProperty("minor") + "." + properties.getProperty("patch")
+group = 'com.webengage'
+
+def mavenArtifactId = "$System.env.MAVEN_ARTIFACT_ID"
+def mavenArtifactDescription = "$System.env.MAVEN_ARTIFACT_DESC"
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId group
+                artifactId mavenArtifactId
+                version version
+
+                // Two artifacts, the `aar` (or `jar`) and the sources
+                if (project.plugins.findPlugin("com.android.library")) {
+                    from components.release
+                } else {
+                    from components.java
+                }
+
+                artifact androidSourcesJar
+
+                // Mostly self-explanatory metadata
+                // Dependencies are only automatically included by the release plugin if the release
+                // variant is built. Since we've disabled the release variant to improve build
+                // times, we need to add the dependencies to the pom file explicitly.
+                pom.withXml {
+                    def hasDependency =  !asNode().dependencies.isEmpty()
+                    def dependenciesNode = null
+                    println("hasDependency: " + hasDependency)
+                    if (hasDependency) {
+                        dependenciesNode = asNode().get("dependencies")
+                    } else {
+                        dependenciesNode = asNode().appendNode('dependencies')
+                    }
+                    //Test Dependencies: https://reflectoring.io/maven-scopes-gradle-configurations/
+                    project.configurations.testImplementation.allDependencies.each {
+                        def groupId = it.group
+                        def artifactId = it.name
+                        // If we specify an artifact id that differs from the project name, it won't
+                        // match. To avoid that, we look up the artifact id (and group) by property
+                        // for any project dependencies.
+                        // TODO: there must be a neater way to do this.
+                        if (it instanceof ProjectDependency) {
+                            def depProperties = it.getDependencyProject().getProperties()
+                            groupId = depProperties.get("GROUP")
+                            artifactId = depProperties.get("POM_ARTIFACT_ID")
+                        }
+                        def dependencyNode = dependenciesNode[0].appendNode('dependency')
+                        dependencyNode.appendNode('groupId', groupId)
+                        dependencyNode.appendNode('artifactId', artifactId)
+                        dependencyNode.appendNode('version', it.version)
+                        dependencyNode.appendNode('scope', 'test')
+                    }
+                }
+
+                pom {
+                    name = 'WebEngage Segment integration library for android'
+                    description = mavenArtifactDescription
+                    url = siteUrl
+
+                    licenses {
+                        license {
+                            name = 'Apache License'
+                            url = 'http://www.apache.org/licenses'
+                        }
+                    }
+
+                    organization {
+                        name = "Webklipper technology"
+                        url = "https://www.webengage.com"
+                    }
+
+                    developers {
+                        developer {
+                            id = 'WebEngage'
+                            name = 'WebEngage'
+                            email = 'mobile@webengage.com'
+                        }
+                    }
+
+                    scm {
+                        url = "https://www.webengage.com"
+                    }
+                }
+            }
+        }
+    }
+}
+
+ext["signing.keyId"] = rootProject.ext["signing.keyId"]
+ext["signing.password"] = rootProject.ext["signing.password"]
+ext["signing.secretKeyRingFile"] = rootProject.ext["signing.secretKeyRingFile"]
+
+signing {
+    sign publishing.publications
+}
