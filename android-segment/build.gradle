@@ -21,7 +21,7 @@ android {
 
 dependencies {
     implementation (fileTree(include: ['*.jar'], dir: 'libs'))
-    implementation 'com.webengage:android-sdk:3+'
+    implementation 'com.webengage:android-sdk:[3.18,)'
     compileOnly 'com.segment.analytics.android:analytics:4.9.4'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:3.5.11'
