@@ -1,6 +1,7 @@
 package com.webengage.sdk.android.integrations.segment;
 
 import android.app.Activity;
+import android.util.Log;
 
 import com.segment.analytics.Analytics;
 import com.segment.analytics.Traits;
@@ -150,7 +151,12 @@ public class WebEngageIntegration extends Integration<WebEngage> {
                 traits.remove(PHONE_KEY);
             }
             if (traits.get(ADDRESS_KEY) != null) {
-                Traits.Address address = (Traits.Address) traits.get(ADDRESS_KEY);
+                Traits.Address address = null;
+                if (traits.get(ADDRESS_KEY) instanceof Traits.Address) {
+                    address = (Traits.Address) traits.get(ADDRESS_KEY);
+                } else if(traits.get(ADDRESS_KEY) instanceof HashMap) {
+                    address = new Traits.Address((Map<String, Object>) traits.get(ADDRESS_KEY));
+                }
                 traits.putAll(address);
                 segmentLogger.verbose("Setting address: %s", traits.get(ADDRESS_KEY));
                 traits.remove(ADDRESS_KEY);
