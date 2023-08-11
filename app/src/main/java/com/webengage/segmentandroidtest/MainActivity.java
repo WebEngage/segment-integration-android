@@ -59,11 +59,13 @@ public class MainActivity extends Activity implements View.OnClickListener, Acti
                 String cuid = UUID.randomUUID().toString();
                 Analytics.with(this).identify(cuid);
                 Map<String, Object> webEngageOptions = new HashMap<>();
-                webEngageOptions.put("we_hashed_email", "123");
-                webEngageOptions.put("we_hashed_phone", "321");
+                webEngageOptions.put("we_hashed_email", "123@gmail.com");
+                webEngageOptions.put("we_hashed_phone", "9876543210");
                 webEngageOptions.put("we_push_opt_in", true);
                 webEngageOptions.put("we_sms_opt_in", true);
-                webEngageOptions.put("we_email_opt_in", false);
+                webEngageOptions.put("we_email_opt_in", true);
+                webEngageOptions.put("we_whatsapp_opt_in", true);
+                webEngageOptions.put("we_inapp_opt_in", true);
                 Analytics.with(this.getApplicationContext()).identify(cuid, null, new Options().setIntegrationOptions("WebEngage", webEngageOptions));
                 break;
 

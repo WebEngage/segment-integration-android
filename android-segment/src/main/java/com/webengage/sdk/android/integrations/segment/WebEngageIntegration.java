@@ -48,6 +48,8 @@ public class WebEngageIntegration extends Integration<WebEngage> {
     private static final String PUSH_OPT_IN_KEY = "we_push_opt_in";
     private static final String SMS_OPT_IN_KEY = "we_sms_opt_in";
     private static final String EMAIL_OPT_IN_KEY = "we_email_opt_in";
+    private static final String WHATSAPP_OPT_IN_KEY = "we_whatsapp_opt_in";
+    private static final String INAPP_OPT_IN_KEY = "we_inapp_opt_in";
 
     protected static final String LICENSE_CODE_KEY = "licenseCode";
     private Logger segmentLogger;
@@ -186,6 +188,16 @@ public class WebEngageIntegration extends Integration<WebEngage> {
                 Boolean emailOptIn = Boolean.valueOf(String.valueOf(webengageOptions.get(EMAIL_OPT_IN_KEY)));
                 userProfileBuilder.setOptIn(Channel.EMAIL, emailOptIn);
                 segmentLogger.verbose("Setting email opt in: %s", emailOptIn);
+            }
+            if (webengageOptions.get(WHATSAPP_OPT_IN_KEY) != null) {
+                Boolean whatsappOptIn = Boolean.valueOf(String.valueOf(webengageOptions.get(WHATSAPP_OPT_IN_KEY)));
+                userProfileBuilder.setOptIn(Channel.WHATSAPP, whatsappOptIn);
+                segmentLogger.verbose("Setting whatsapp opt in: %s", whatsappOptIn);
+            }
+            if (webengageOptions.get(INAPP_OPT_IN_KEY) != null) {
+                Boolean inAppOptIn = Boolean.valueOf(String.valueOf(webengageOptions.get(INAPP_OPT_IN_KEY)));
+                userProfileBuilder.setOptIn(Channel.IN_APP, inAppOptIn);
+                segmentLogger.verbose("Setting InApp opt in: %s", inAppOptIn);
             }
         }
         WebEngage.get().user().setUserProfile(userProfileBuilder.build());
