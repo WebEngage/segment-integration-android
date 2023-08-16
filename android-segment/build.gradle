@@ -13,7 +13,7 @@ android {
         targetSdkVersion 33
         versionCode 1
         versionName "1.0"
-        manifestPlaceholders = [we_segment_version: readVersion()]
+        manifestPlaceholders = [we_child_version: readVersion()]
     }
 }
 

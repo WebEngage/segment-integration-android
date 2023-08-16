@@ -5,8 +5,8 @@
 
     <application>
         <meta-data
-            android:name="com.webengage.child.segment"
-            android:value="segment:${we_segment_version}" />
+            android:name="com.webengage.child.seg"
+            android:value="seg_a:${we_child_version}" />
     </application>
 
 </manifest>
