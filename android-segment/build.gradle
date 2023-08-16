@@ -13,7 +13,7 @@ android {
         targetSdkVersion 33
         versionCode 1
         versionName "1.0"
-
+        manifestPlaceholders = [we_segment_version: readVersion()]
     }
 }
 
@@ -25,4 +25,22 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:3.5.11'
     testImplementation 'org.powermock:powermock-api-mockito:1.6.2'
     testImplementation 'org.powermock:powermock-module-junit4:2.0.7'
+}
+
+
+String readVersion() {
+    def version = new Properties()
+    def stream
+    try {
+        stream = new FileInputStream(new File(projectDir, 'version.properties'))
+        version.load(stream)
+    } catch (FileNotFoundException ignore) {
+    } finally {
+        if (stream != null) stream.close()
+    }
+    // safety defaults in case file is missing
+    if(!version['major']) version['major'] = "1"
+    if(!version['minor']) version['minor'] = "0"
+    if(!version['patch']) version['patch'] = "0"
+    return "${version['major']}.${version['minor']}.${version['patch']}"
 }
